@@ -2,22 +2,21 @@ package mani.kata.auctionsnipe;
 
 import static org.junit.Assert.assertTrue;
 
-import org.jivesoftware.smack.XMPPException;
 import org.junit.After;
 import org.junit.Test;
 
 
 public class AuctionSniperEndToEndTest {
-    private final FakeAuctionServer auction = new FakeAuctionServer("54321");
-    private final ApplicationRunner app = new ApplicationRunner();
+    private final FakeAuctionServer auction = new FakeAuctionServer("item-54321");
+    private final ApplicationRunner application = new ApplicationRunner();
 
     @Test
     public void sniperJoinsAuctionUntilAuctionCloses() throws Exception {
         auction.startSellingItem();
-        app.startBiddingIn(auction);
+        application.startBiddingIn(auction);
         auction.hasReceivedJoinRequest();
         auction.announceClosed();
-        app.showsSniperHasLost();
+        application.showsSniperHasLost();
     }
 
     @After
@@ -27,6 +26,6 @@ public class AuctionSniperEndToEndTest {
 
     @After
     public void stopApp() {
-        app.stop();
+        application.stop();
     }
 }

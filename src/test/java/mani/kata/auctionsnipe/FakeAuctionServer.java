@@ -16,14 +16,14 @@ import static org.junit.Assert.assertThat;
 
 public class FakeAuctionServer {
     private static final String XMPP_HOSTNAME = "localhost";
-    private static final String ITEM_ID_AS_LOGIN = "auction-item-%s";
+    private static final String ITEM_ID_AS_LOGIN = "auction-%s";
     private static final String AUCTION_PASSWORD = "auction";
     private static final String AUCTION_RESOURCE = "Auction";
 
 
     private final String itemId;
     private final XMPPConnection connection;
-    private Chat currentChat;
+    private volatile Chat currentChat;
 
     private final SimpleMessageListener messageListener = new SimpleMessageListener();
 
@@ -35,7 +35,10 @@ public class FakeAuctionServer {
     public void startSellingItem() throws XMPPException {
         connection.connect();
         connection.login(String.format(ITEM_ID_AS_LOGIN, itemId), AUCTION_PASSWORD, AUCTION_RESOURCE);
-        connection.getChatManager().addChatListener((chat, createdLocally) -> { currentChat = chat; });
+        connection.getChatManager().addChatListener((chat, createdLocally) -> {
+            currentChat = chat;
+            chat.addMessageListener(messageListener);
+        });
     }
 
     public String getItemId() {
@@ -64,6 +67,6 @@ class SimpleMessageListener implements MessageListener {
     }
 
     public void receivesAMessage() throws InterruptedException {
-        assertThat("Message", messages.poll(5, TimeUnit.SECONDS), is(notNullValue()));
+        assertThat("Message", messages.poll(2, TimeUnit.SECONDS), is(notNullValue()));
     }
 }
