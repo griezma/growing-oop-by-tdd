@@ -1,5 +1,6 @@
 package mani.kata.auctionsnipe;
 
+import org.hamcrest.Matcher;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -9,8 +10,7 @@ import org.jivesoftware.smack.packet.Message;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 
@@ -46,7 +46,7 @@ public class FakeAuctionServer {
     }
 
     public void hasReceivedJoinRequest() throws InterruptedException {
-        messageListener.receivesAMessage();
+        messageListener.receivesAMessage(is(anything()));
     }
 
     public void announceClosed() throws XMPPException {
@@ -55,6 +55,30 @@ public class FakeAuctionServer {
 
     public void stop() {
         connection.disconnect();
+    }
+
+    public void reportPrice(int price, int increment, String bidder) throws XMPPException {
+        currentChat.sendMessage(
+                String.format("SOLVersion: 1.1; Event: PRICE; CurrentPrice: %d; Increment: %d; Bidder: %s",
+                        price, increment, bidder));
+    }
+
+    public void hasReceivedBid(int bidPrice, String bidderId) throws InterruptedException {
+        assertThat(currentChat.getParticipant(), equalTo(bidderId));
+
+        messageListener.receivesAMessage(allOf(
+                containsString("Command: BID;"),
+                containsString("Price: " + bidPrice + ';')
+        ));
+    }
+
+    public void hasReceivedJoinRequestFrom(String sniperId) throws InterruptedException {
+        receivesAMessageMatching(sniperId, equalTo(Main.JOIN_COMMAND_FORMAT));
+    }
+
+    private void receivesAMessageMatching(String sniperId, Matcher<? super String> matcher) throws InterruptedException {
+        messageListener.receivesAMessage(matcher);
+        assertThat(currentChat.getParticipant(), startsWith(sniperId));
     }
 }
 
@@ -66,7 +90,9 @@ class SimpleMessageListener implements MessageListener {
         messages.add(message);
     }
 
-    public void receivesAMessage() throws InterruptedException {
-        assertThat("Message", messages.poll(2, TimeUnit.SECONDS), is(notNullValue()));
+    public void receivesAMessage(Matcher<? super String> matcher) throws InterruptedException {
+        final Message message = messages.poll(2, TimeUnit.SECONDS);
+        assertThat("Message", message, is(notNullValue()));
+        assertThat(message.getBody(), matcher);
     }
 }
