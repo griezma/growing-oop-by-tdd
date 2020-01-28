@@ -1,4 +1,4 @@
-package mani.kata.auctionsnipe;
+package griezma.goos.auctionsniper;
 
 import com.objogate.wl.swing.AWTEventQueueProber;
 import com.objogate.wl.swing.driver.JFrameDriver;
@@ -11,7 +11,7 @@ public class AuctionSniperDriver extends JFrameDriver {
     public AuctionSniperDriver(int timeout) {
         super(new GesturePerformer(),
                 JFrameDriver.topLevelFrame(
-                        named(MainWindow.MAIN_WINDOW_NAME),
+                        named(Main.MAIN_WINDOW_NAME),
                         showingOnScreen()),
                 new AWTEventQueueProber(timeout, 100));
     }

@@ -1,4 +1,4 @@
-package mani.kata.auctionsnipe;
+package griezma.goos.auctionsniper;
 
 
 import org.jivesoftware.smack.Chat;
@@ -7,10 +7,14 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class Main {
+
+    public static final String MAIN_WINDOW_NAME = "AuctionSniperMain";
 
     private static final int ARG_HOSTNAME = 0;
     private static final int ARG_USERNAME = 1;
@@ -18,27 +22,25 @@ public class Main {
     private static final int ARG_ITEM_ID = 3;
 
     public static final String AUCTION_RESOURCE = "Auction";
-    public static final String ITEM_ID_AS_LOGIN = "auction-%s";
+    public static final String ITEM_ID_AS_LOGIN = "auction-item-%s";
     public static final String AUCTION_ID_FORMAT = ITEM_ID_AS_LOGIN + "@%s/" + AUCTION_RESOURCE;
 
-    public static final String STATUS_JOINING = "joining";
-    public static final String STATUS_BIDDING = "bidding";
     public static final String SNIPER_STATUS_NAME = "STATUS";
-    public static final String STATUS_LOST = "lost";
-
     public static final String JOIN_COMMAND_FORMAT = "SOLVersion: 1.1; Command: JOIN;";
 
     public static void main(String... args ) throws Exception {
         Main main = new Main();
 
         main.joinAuction(
-                connection(args[ARG_HOSTNAME], args[ARG_USERNAME], args[ARG_PASSWORD]),
-                args[ARG_ITEM_ID]);
+                connection(
+                        args[ARG_HOSTNAME],
+                        args[ARG_USERNAME],
+                        args[ARG_PASSWORD]),
+                        args[ARG_ITEM_ID]);
     }
 
     private static String auctionId(String itemId, XMPPConnection connection) {
         String result = String.format(AUCTION_ID_FORMAT, itemId, connection.getServiceName());
-        //System.out.println("main auctionId " + result);
         return result;
     }
 
@@ -54,8 +56,12 @@ public class Main {
     private MainWindow ui;
     private Chat notToBeGCd;
 
-    Main() throws Exception {
+    private Main() throws Exception {
         startUI();
+    }
+
+    private void startUI() throws Exception {
+        SwingUtilities.invokeAndWait(() -> ui = new MainWindow());
     }
 
     private void joinAuction(XMPPConnection connection, String itemId) throws XMPPException {
@@ -63,7 +69,9 @@ public class Main {
 
         Chat chat = connection.getChatManager().createChat(
                 auctionId(itemId, connection),
-                new AuctionMessageTranslator()
+                (messageChat, message) -> {
+                    SwingUtilities.invokeLater(() -> ui.showStatus(MainWindow.STATUS_LOST));
+                }
         );
 
         this.notToBeGCd = chat;
@@ -81,8 +89,31 @@ public class Main {
         });
     }
 
-    private void startUI() throws Exception {
-        SwingUtilities.invokeAndWait(() -> ui = new MainWindow());
+    public static class MainWindow extends JFrame {
+        static final String STATUS_JOINING = "joining";
+        static final String STATUS_LOST = "lost";
+
+        private final JLabel sniperStatus = createLabel(STATUS_JOINING);
+
+        public MainWindow(){
+            super("Auction Sniper");
+            setName(MAIN_WINDOW_NAME);
+            add(sniperStatus);
+            pack();
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setVisible(true);
+        }
+
+        private JLabel createLabel(String initialText) {
+            JLabel result = new JLabel(initialText);
+            result.setName(SNIPER_STATUS_NAME);
+            result.setBorder(new LineBorder(Color.BLACK));
+            return result;
+        }
+
+        public void showStatus(String statusLost) {
+            sniperStatus.setText(statusLost);
+        }
     }
 }
 

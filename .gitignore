@@ -1,6 +1,8 @@
+.idea/
+.settings/
+docker-volumes/
+*.iml
 .classpath
-.idea
 .project
 .vscode
-.settings/
 target/

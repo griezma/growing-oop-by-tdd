@@ -1,12 +1,10 @@
-package mani.kata.auctionsnipe;
+package griezma.goos.auctionsniper;
 
 public class ApplicationRunner {
 
-    private static final String XMPP_HOSTNAME = "localhost";
+    private static final String XMPP_HOST = "localhost";
     private static final String SNIPER_ID = "sniper";
     private static final String SNIPER_PASSWORD = "sniper";
-
-    public static final String SNIPER_XMPP_ID = "sniper@";
 
     private AuctionSniperDriver driver;
 
@@ -15,7 +13,7 @@ public class ApplicationRunner {
             @Override
             public void run() {
                 try {
-                    Main.main(XMPP_HOSTNAME, SNIPER_ID, SNIPER_PASSWORD, auction.getItemId());
+                    Main.main(XMPP_HOST, SNIPER_ID, SNIPER_PASSWORD, auction.getItemId());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -24,16 +22,13 @@ public class ApplicationRunner {
         thread.setDaemon((true));
         thread.start();
         driver = new AuctionSniperDriver(1000);
-        driver.showsSniperStatus(Main.STATUS_JOINING);
+        driver.showsSniperStatus(Main.MainWindow.STATUS_JOINING);
     }
 
     public void showsSniperHasLost() {
-        driver.showsSniperStatus(Main.STATUS_LOST);
+        driver.showsSniperStatus(Main.MainWindow.STATUS_LOST);
     }
 
-    public void hasShownSniperIsBidding() {
-        driver.showsSniperStatus(Main.STATUS_BIDDING);
-    }
 
     public void stop() {
         if (driver != null) {
