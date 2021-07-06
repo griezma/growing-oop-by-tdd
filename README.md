@@ -1,6 +1,6 @@
 # Growing object oriented systems by tests
 
-Examples from "Growing Object-Oriented Software, Guided by Tests" (Steve Freeman) book 
+Reimplemented examples from the "Growing Object-Oriented Software, Guided by Tests" (Steve Freeman) book
 
 ## Setup
 * docker-compose up -d
