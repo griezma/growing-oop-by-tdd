@@ -1,4 +1,4 @@
-# Growing object oriented systems by tests
+# GOOS examples
 
 Reimplemented examples from the "Growing Object-Oriented Software, Guided by Tests" (Steve Freeman) book
 
