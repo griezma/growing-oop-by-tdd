@@ -1,8 +1,10 @@
 package griezma.goos.auctionsniper;
 
 public class AuctionSniper implements AuctionEventListener {
+
     private Auction auction;
     private SniperListener listener;
+    private boolean winning;
 
     public AuctionSniper(Auction auction, SniperListener listener) {
         this.auction = auction;
@@ -11,13 +13,21 @@ public class AuctionSniper implements AuctionEventListener {
 
     @Override
     public void auctionClosed() {
-        listener.sniperLost();
+        if (winning) {
+            listener.sniperWon();
+        } else {
+            listener.sniperLost();
+        }
     }
 
     @Override
-    public void currentPrice(int price, int increment) {
-        auction.bid(price + increment);
-        listener.sniperBidding();
+    public void currentPrice(int price, int increment, PriceSource source) {
+        winning = source == PriceSource.Sniper;
+        if (winning) {
+            listener.sniperWinning();
+        } else {
+            auction.bid(price + increment);
+            listener.sniperBidding();
+        }
     }
-    
 }

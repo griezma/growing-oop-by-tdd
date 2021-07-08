@@ -9,12 +9,16 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.packet.Message;
 
+import griezma.goos.auctionsniper.AuctionEventListener.PriceSource;
+
 public class AuctionMessageTranslator implements MessageListener {
     private static Logger log = Logger.getLogger("AuctionMessageTranslator");
     private AuctionEventListener eventListener;
+    private final String sniperId;
 
-    public AuctionMessageTranslator(AuctionEventListener eventListener) {
+    public AuctionMessageTranslator(String sniperId, AuctionEventListener eventListener) {
         this.eventListener = eventListener;
+        this.sniperId = sniperId;
     }
 
     @Override
@@ -27,7 +31,7 @@ public class AuctionMessageTranslator implements MessageListener {
             eventListener.auctionClosed();
         } 
         else if (event.getType().equals("PRICE")) {
-            eventListener.currentPrice(event.currentPrice(), event.increment());
+            eventListener.currentPrice(event.currentPrice(), event.increment(), event.priceSource(sniperId));
         }
     }
 
@@ -59,6 +63,14 @@ public class AuctionMessageTranslator implements MessageListener {
 
         int increment() {
             return getInt("Increment");
+        }
+
+        String bidder() {
+            return get("Bidder");
+        }
+
+        PriceSource priceSource(String sniperId) {
+            return bidder().equals(sniperId) ? PriceSource.Sniper : PriceSource.OtherBidder;
         }
 
         private String get(String field) {

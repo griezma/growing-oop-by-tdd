@@ -63,7 +63,7 @@ public class Main {
     }
 
     private void joinAuction(XMPPConnection connection, String itemId) throws XMPPException {
-        log.info("joinAuction " + itemId);
+        log.info(String.format("joinAuction: user=%s", connection.getUser()));
         disconnectWhenUICloses(connection);
 
         final Chat chat = connection.getChatManager().createChat(
@@ -75,6 +75,7 @@ public class Main {
 
         chat.addMessageListener(
             new AuctionMessageTranslator(
+                connection.getUser(),
                 new AuctionSniper(auction, new SniperStateDisplayer())));
 
         auction.join();
@@ -107,8 +108,14 @@ public class Main {
             showStatus(MainWindow.STATUS_BIDDING);
         }
     
+        @Override
         public void sniperWinning() {
             showStatus(MainWindow.STATUS_WINNING);
+        }
+
+        @Override
+        public void sniperWon() {
+            showStatus(MainWindow.STATUS_WON);
         }
     
         private void showStatus(String status) {
@@ -146,6 +153,7 @@ public class Main {
         public static final String STATUS_LOST = "lost";
         public static final String STATUS_BIDDING = "bidding";
         public static final String STATUS_WINNING = "winning";
+        public static final String STATUS_WON = "won";
 
         private final JLabel sniperStatus = createLabel(STATUS_JOINING);
 
