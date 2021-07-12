@@ -1,23 +1,20 @@
 package griezma.goos.auctionsniper;
 
-import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
-import javax.swing.border.LineBorder;
 
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 
-public class Main {
+import griezma.goos.auctionsniper.ui.MainWindow;
+import griezma.goos.auctionsniper.ui.SnipersTableModel;
 
-    public static final String MAIN_WINDOW_NAME = "AuctionSniperMain";
+public class Main {
 
     private static final int ARG_HOSTNAME = 0;
     private static final int ARG_USERNAME = 1;
@@ -25,7 +22,7 @@ public class Main {
     private static final int ARG_ITEM_ID = 3;
 
     public static final String AUCTION_RESOURCE = "Auction";
-    public static final String ITEM_ID_AS_LOGIN = "auction-item-%s";
+    public static final String ITEM_ID_AS_LOGIN = "auction-%s";
     public static final String AUCTION_ID_FORMAT = ITEM_ID_AS_LOGIN + "@%s/" + AUCTION_RESOURCE;
 
     public static final String SNIPER_STATUS_NAME = "STATUS";
@@ -52,6 +49,7 @@ public class Main {
     }
 
     private MainWindow ui;
+    private final SnipersTableModel snipers = new SnipersTableModel();
     private Auction auction;
 
     private Main() throws Exception {
@@ -59,7 +57,7 @@ public class Main {
     }
 
     private void startUI() throws Exception {
-        SwingUtilities.invokeAndWait(() -> ui = new MainWindow());
+        SwingUtilities.invokeAndWait(() -> ui = new MainWindow(snipers));
     }
 
     private void joinAuction(XMPPConnection connection, String itemId) throws XMPPException {
@@ -76,16 +74,10 @@ public class Main {
         chat.addMessageListener(
             new AuctionMessageTranslator(
                 connection.getUser(),
-                new AuctionSniper(auction, new SniperStateDisplayer())));
+                new AuctionSniper(itemId, auction, new SwingThreadSniperListener())));
 
         auction.join();
     }
-
-    // @Override
-    // public void currentPrice(int price, int increment, String bidder) {
-    //     log.info(String.format("currentPrice: price=%d, bidder=%s", price, bidder));
-    //     SwingUtilities.invokeLater(() -> ui.showStatus(MainWindow.STATUS_BIDDING));
-    // }
 
     private void disconnectWhenUICloses(XMPPConnection connection) {
         ui.addWindowListener(new WindowAdapter() {
@@ -96,32 +88,13 @@ public class Main {
         });
     }
 
-    public class SniperStateDisplayer implements SniperListener {
+    public class SwingThreadSniperListener implements SniperListener {
     
         @Override
-        public void sniperLost() {
-            showStatus(MainWindow.STATUS_LOST);
+        public void sniperStateChanged(SniperSnapshot sniperState) {
+            log.info("sniperStateChanged: " + sniperState);
+            SwingUtilities.invokeLater(() -> snipers.sniperStateChanged(sniperState));
         }
-    
-        @Override
-        public void sniperBidding() {
-            showStatus(MainWindow.STATUS_BIDDING);
-        }
-    
-        @Override
-        public void sniperWinning() {
-            showStatus(MainWindow.STATUS_WINNING);
-        }
-
-        @Override
-        public void sniperWon() {
-            showStatus(MainWindow.STATUS_WON);
-        }
-    
-        private void showStatus(String status) {
-            SwingUtilities.invokeLater(() -> ui.showStatus(status));
-        }
-    
     }
 
     public static class XmppAuction implements Auction {
@@ -145,36 +118,6 @@ public class Main {
             } catch (XMPPException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    public static class MainWindow extends JFrame {
-        public static final String STATUS_JOINING = "joining";
-        public static final String STATUS_LOST = "lost";
-        public static final String STATUS_BIDDING = "bidding";
-        public static final String STATUS_WINNING = "winning";
-        public static final String STATUS_WON = "won";
-
-        private final JLabel sniperStatus = createLabel(STATUS_JOINING);
-
-        public MainWindow(){
-            super("Auction Sniper");
-            setName(MAIN_WINDOW_NAME);
-            add(sniperStatus);
-            pack();
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            setVisible(true);
-        }
-        
-        private JLabel createLabel(String initialText) {
-            JLabel result = new JLabel(initialText);
-            result.setName(SNIPER_STATUS_NAME);
-            result.setBorder(new LineBorder(Color.BLACK));
-            return result;
-        }
-
-        public void showStatus(String status) {
-            sniperStatus.setText(status);
         }
     }
 

@@ -1,5 +1,7 @@
 package griezma.goos.auctionsniper;
 
+import griezma.goos.auctionsniper.ui.MainWindow;
+
 public class ApplicationRunner {
 
     private static final String XMPP_HOST = "localhost";
@@ -9,8 +11,11 @@ public class ApplicationRunner {
     public static final String SNIPER_XMPP_ID = "sniper@045a0220ac76/Auction";
 
     private AuctionSniperDriver driver;
+    private String itemId;
 
     public void startBiddingIn(FakeAuctionServer auction) {
+        itemId = auction.getItemId();
+
         Thread thread = new Thread("Test Application") {
             @Override
             public void run() {
@@ -24,24 +29,25 @@ public class ApplicationRunner {
         thread.setDaemon((true));
         thread.start();
         driver = new AuctionSniperDriver(1000);
-        driver.showsSniperStatus(Main.MainWindow.STATUS_JOINING);
+        driver.hasTitle(MainWindow.APPLICATION_TITLE);
+        driver.hasColumnTitles();
+        driver.showsSniperStatus(auction.getItemId(), 0, 0, MainWindow.STATUS_JOINING);
     }
 
-    public void showsSniperHasLost() {
-        // System.out.println("showsSniperHasLost");
-        driver.showsSniperStatus(Main.MainWindow.STATUS_LOST);
+    public void showsSniperHasLost(int lastPrice) {
+        driver.showsSniperStatus(itemId, lastPrice, lastPrice, MainWindow.STATUS_LOST);
     }
 
-    public void showsSniperIsBidding() {
-        driver.showsSniperStatus(Main.MainWindow.STATUS_BIDDING);
+    public void showsSniperIsBidding(int lastPrice, int lastBid) {
+        driver.showsSniperStatus(itemId, lastPrice, lastBid, MainWindow.STATUS_BIDDING);
     }
 
-    public void showsSniperIsWinning() {
-        driver.showsSniperStatus(Main.MainWindow.STATUS_WINNING);
+    public void showsSniperIsWinning(int winningBid) {
+        driver.showsSniperStatus(itemId, winningBid, winningBid, MainWindow.STATUS_WINNING);
     }
 
-    public void showsSniperHasWon() {
-        driver.showsSniperStatus(Main.MainWindow.STATUS_WON);
+    public void showsSniperHasWon(int lastPrice) {
+        driver.showsSniperStatus(itemId, lastPrice, lastPrice, MainWindow.STATUS_WON);
     }
 
     public void stop() {
