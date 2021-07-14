@@ -1,5 +1,7 @@
 package griezma.goos.auctionsniper.ui;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.swing.table.AbstractTableModel;
@@ -37,7 +39,7 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
             return values()[index];
         }
 
-        final String name;
+        public final String name;
 
         Column(String name) {
             this.name = name;
@@ -54,11 +56,11 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
         MainWindow.STATUS_WON
     };
 
-    private SniperSnapshot sniperSnapshot = SniperSnapshot.joining("");
+    private List<SniperSnapshot> snapshots = new LinkedList<SniperSnapshot>();
 
     @Override
     public int getRowCount() {
-        return 1;
+        return snapshots.size();
     }
 
     @Override
@@ -69,6 +71,7 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
     @Override
     public Object getValueAt(int rowIndex, int colIndex) {
         Column col = Column.at(colIndex);
+        SniperSnapshot sniperSnapshot = snapshots.get(rowIndex);
 
         switch (col) {
             case ITEM_ID: return sniperSnapshot.itemId;
@@ -87,11 +90,27 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
     @Override
     public void sniperStateChanged(SniperSnapshot newSnapshot) {
         log.info("sniperStateChanged: " + newSnapshot);
-        this.sniperSnapshot = newSnapshot;
-        fireTableRowsUpdated(0, 0);
+        int rowIndex = matchingRow(newSnapshot);
+        snapshots.set(rowIndex, newSnapshot);
+        fireTableRowsUpdated(rowIndex, rowIndex);
     }
 
-    private String textFor(SniperState sniperState) {
+    String textFor(SniperState sniperState) {
         return STATUS_TEXT[sniperState.ordinal()];
+    }
+
+    public void addSniper(SniperSnapshot snapshot) {
+        snapshots.add(snapshot);
+        final int lastRow = snapshots.size() - 1;
+        fireTableRowsInserted(lastRow, lastRow);
+    }
+
+    private int matchingRow(SniperSnapshot snapshot) {
+        for (int i = 0; i < snapshots.size(); ++i) {
+            if (snapshot.isForSameItemAs(snapshots.get(i))) {
+                return i;
+            }
+        }
+        throw new IllegalArgumentException("Cannot find match for " + snapshot);
     }
 }

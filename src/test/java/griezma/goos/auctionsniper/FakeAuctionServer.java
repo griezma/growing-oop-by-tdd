@@ -1,6 +1,7 @@
 package griezma.goos.auctionsniper;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
@@ -90,9 +91,9 @@ class SimpleMessageListener implements MessageListener {
         messages.add(message);
     }
 
-    public void receivesAMessage(Matcher<String> matcher) throws InterruptedException {
+    public void receivesAMessage(Matcher<String> messageMatcher) throws InterruptedException {
         final Message message = messages.poll(2, TimeUnit.SECONDS);
-        log.info("receivesAMessage: " + message.getBody());
-        assertThat("Message", message.getBody(), matcher);
+        log.info("receivesAMessage: " + (message != null ? message.getBody() : "null"));
+        assertThat(message, hasProperty("body", messageMatcher));
     }
 }

@@ -2,6 +2,8 @@ package griezma.goos.auctionsniper;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -19,7 +21,6 @@ public class Main {
     private static final int ARG_HOSTNAME = 0;
     private static final int ARG_USERNAME = 1;
     private static final int ARG_PASSWORD = 2;
-    private static final int ARG_ITEM_ID = 3;
 
     public static final String AUCTION_RESOURCE = "Auction";
     public static final String ITEM_ID_AS_LOGIN = "auction-%s";
@@ -30,28 +31,25 @@ public class Main {
     public static final String JOIN_COMMAND_FORMAT = "SOLVersion: 1.1; Command: JOIN";
     public static final String BID_COMMAND_FORMAT = "SOLVersion: 1.1; Command: BID; Price: %d";
     
-    static private final Logger log = Logger.getLogger("Main");
+    private static final Logger log = Logger.getLogger("Main");
 
     static {
         initLogging();
     }
 
-    public static void main(String... args ) throws Exception {
+    public static void main(String... args) throws Exception {
 
         Main main = new Main();
-
-        main.joinAuction(
-                connection(
-                        args[ARG_HOSTNAME],
-                        args[ARG_USERNAME],
-                        args[ARG_PASSWORD]),
-                        args[ARG_ITEM_ID]);
+        XMPPConnection connection = connection(args[ARG_HOSTNAME], args[ARG_USERNAME], args[ARG_PASSWORD]);
+        main.disconnectWhenUICloses(connection);
+        main.addUserRequestListenerFor(connection);
     }
 
     private MainWindow ui;
     private final SnipersTableModel snipers = new SnipersTableModel();
-    private Auction auction;
+    private List<Auction> auctions = new LinkedList<>();
 
+    
     private Main() throws Exception {
         startUI();
     }
@@ -59,17 +57,27 @@ public class Main {
     private void startUI() throws Exception {
         SwingUtilities.invokeAndWait(() -> ui = new MainWindow(snipers));
     }
+    
+    private void addUserRequestListenerFor(final XMPPConnection connection) {
+        ui.addUserRequestListener(new UserRequestListener() {
+            @Override
+            public void joinAuction(String itemId) {
+                joinAuctionInUiThread(connection, itemId);
+            }
+        });
+    }
 
-    private void joinAuction(XMPPConnection connection, String itemId) throws XMPPException {
+    private void joinAuctionInUiThread(XMPPConnection connection, String itemId) {
         log.info(String.format("joinAuction: user=%s", connection.getUser()));
-        disconnectWhenUICloses(connection);
 
-        final Chat chat = connection.getChatManager().createChat(
-                auctionId(itemId, connection),
-                null
+        snipers.addSniper(SniperSnapshot.joining(itemId));
+
+        Chat chat = connection.getChatManager().createChat(
+            auctionId(itemId, connection),
+            null
         );
 
-        auction = new XmppAuction(chat);
+        Auction auction = new XmppAuction(chat);
 
         chat.addMessageListener(
             new AuctionMessageTranslator(
@@ -77,6 +85,7 @@ public class Main {
                 new AuctionSniper(itemId, auction, new SwingThreadSniperListener())));
 
         auction.join();
+        auctions.add(auction);
     }
 
     private void disconnectWhenUICloses(XMPPConnection connection) {
@@ -84,6 +93,7 @@ public class Main {
             @Override
             public void windowClosed(WindowEvent e) {
                 connection.disconnect();
+                auctions.clear();
             }
         });
     }
