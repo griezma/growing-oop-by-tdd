@@ -1,4 +1,4 @@
-package griezma.goos.auctionsniper;
+package griezma.goos.auctionsniper.xmpp;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -9,10 +9,12 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.packet.Message;
 
+import griezma.goos.auctionsniper.AuctionEventListener;
 import griezma.goos.auctionsniper.AuctionEventListener.PriceSource;
 
-public class AuctionMessageTranslator implements MessageListener {
+class AuctionMessageTranslator implements MessageListener {
     private static Logger log = Logger.getLogger("AuctionMessageTranslator");
+    
     private AuctionEventListener eventListener;
     private final String sniperId;
 

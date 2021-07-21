@@ -16,6 +16,8 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 
+import griezma.goos.auctionsniper.xmpp.XmppAuction;
+
 
 public class FakeAuctionServer {
     static final String XMPP_HOSTNAME = "localhost";
@@ -40,7 +42,6 @@ public class FakeAuctionServer {
         connection.connect();
         connection.login(String.format(ITEM_ID_AS_LOGIN, itemId), AUCTION_PASSWORD, AUCTION_RESOURCE);
         connection.getChatManager().addChatListener((chat, createdLocally) -> {
-            log.info("chat created: " + chat.getParticipant());
             currentChat = chat;
             chat.addMessageListener(messageListener);
         });
@@ -65,11 +66,11 @@ public class FakeAuctionServer {
     }
     
     public void hasReceivedJoinRequest(String sniperId) throws InterruptedException {
-        receivesAMessageMatching(sniperId, equalTo(Main.JOIN_COMMAND_FORMAT));
+        receivesAMessageMatching(sniperId, equalTo(XmppAuction.JOIN_COMMAND_FORMAT));
     }
  
     public void hasReceivedBid(int bid, String sniperId) throws InterruptedException {
-        receivesAMessageMatching(sniperId, equalTo(String.format(Main.BID_COMMAND_FORMAT, bid)));
+        receivesAMessageMatching(sniperId, equalTo(String.format(XmppAuction.BID_COMMAND_FORMAT, bid)));
     }
 
     private void receivesAMessageMatching(String sniperId, Matcher<String> matcher) throws InterruptedException {

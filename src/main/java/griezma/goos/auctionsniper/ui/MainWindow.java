@@ -11,7 +11,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
-import griezma.goos.auctionsniper.SniperSnapshot;
 import griezma.goos.auctionsniper.UserRequestListener;
 
 public class MainWindow extends JFrame {
@@ -28,22 +27,15 @@ public class MainWindow extends JFrame {
     public static final String NEW_ITEM_ID_NAME = "NewItemField";
     public static final String JOIN_BUTTON_NAME = "JoinAuctionButton";
     
-    private final SnipersTableModel snipers;
-
     private UserRequestListener userRequestListener;
     
-    public MainWindow(SnipersTableModel tableModel) {
+    public MainWindow(SniperPortfolio portfolio) {
         super(APPLICATION_TITLE);
         setName(MAIN_WINDOW_NAME);
-        this.snipers = tableModel;
-        fillContentPane(makeSnipersTable(), makeControls());
+        fillContentPane(makeSnipersTable(portfolio), makeControls());
         pack();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
-    }
-    
-    public void sniperStateChanged(SniperSnapshot sniperState) {
-        snipers.sniperStateChanged(sniperState);
     }
     
     public void addUserRequestListener(UserRequestListener listener) {
@@ -60,8 +52,10 @@ public class MainWindow extends JFrame {
         contentPane.add(new JScrollPane(snipersTable), BorderLayout.CENTER);
     }
 
-    private JTable makeSnipersTable() {
-        final JTable snipersTable = new JTable(snipers);
+    private JTable makeSnipersTable(SniperPortfolio portfolio) {
+        SnipersTableModel model = new SnipersTableModel();
+        portfolio.addPortfolioListener(model);
+        final JTable snipersTable = new JTable(model);
         snipersTable.setName(SNIPERS_TABLE_NAME);
         return snipersTable;
     }

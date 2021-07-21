@@ -6,11 +6,13 @@ import java.util.logging.Logger;
 
 import javax.swing.table.AbstractTableModel;
 
+import griezma.goos.auctionsniper.AuctionSniper;
+import griezma.goos.auctionsniper.SniperPortfolioListener;
 import griezma.goos.auctionsniper.SniperListener;
 import griezma.goos.auctionsniper.SniperSnapshot;
 import griezma.goos.auctionsniper.SniperState;
 
-public class SnipersTableModel extends AbstractTableModel implements SniperListener {
+public class SnipersTableModel extends AbstractTableModel implements SniperListener, SniperPortfolioListener {
     private static final Logger log = Logger.getLogger("SnipersTableModel");
 
     enum Column {
@@ -98,8 +100,14 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
     String textFor(SniperState sniperState) {
         return STATUS_TEXT[sniperState.ordinal()];
     }
-
-    public void addSniper(SniperSnapshot snapshot) {
+    
+    @Override
+    public void sniperAdded(AuctionSniper sniper) {
+        sniper.addSniperListener(new SwingThreadSniperListener(this));
+        displaySniperSnapshot(sniper.getSnapshot());
+    }
+    
+    private void displaySniperSnapshot(SniperSnapshot snapshot) {
         snapshots.add(snapshot);
         final int lastRow = snapshots.size() - 1;
         fireTableRowsInserted(lastRow, lastRow);
@@ -113,4 +121,5 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
         }
         throw new IllegalArgumentException("Cannot find match for " + snapshot);
     }
+
 }

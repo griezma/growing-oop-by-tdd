@@ -4,9 +4,9 @@ import griezma.goos.auctionsniper.ui.MainWindow;
 
 public class ApplicationRunner {
 
-    private static final String XMPP_HOST = "localhost";
-    private static final String SNIPER_ID = "sniper";
-    private static final String SNIPER_PASSWORD = "sniper";
+    public static final String XMPP_HOST = "localhost";
+    public static final String SNIPER_ID = "sniper";
+    public static final String SNIPER_PASSWORD = "sniper";
 
     public static final String SNIPER_XMPP_ID = "sniper@045a0220ac76/Auction";
 

@@ -1,16 +1,20 @@
 package griezma.goos.auctionsniper;
 
+import griezma.goos.auctionsniper.utils.Announcer;
+
 public class AuctionSniper implements AuctionEventListener {
 
     private Auction auction;
-    private SniperListener listener;
     private SniperSnapshot snapshot;
+    private final Announcer<SniperListener> listeners = Announcer.to(SniperListener.class);
 
-    public AuctionSniper(String itemId, Auction auction, SniperListener listener) {
+    public AuctionSniper(String itemId, Auction auction) {
         this.auction = auction;
-        this.listener = listener;
         this.snapshot = SniperSnapshot.joining(itemId);
-        listener.sniperStateChanged(snapshot);
+    }
+
+    public void addSniperListener(SniperListener listener) {
+        listeners.addListener(listener);
     }
 
     @Override
@@ -33,7 +37,11 @@ public class AuctionSniper implements AuctionEventListener {
         notifyChange();
     }
 
+    public SniperSnapshot getSnapshot() {
+        return snapshot;
+    }
+
     private void notifyChange() {
-        listener.sniperStateChanged(snapshot);
+        listeners.announce().sniperStateChanged(snapshot);
     }
 }

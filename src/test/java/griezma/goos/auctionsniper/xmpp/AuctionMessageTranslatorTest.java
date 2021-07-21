@@ -1,4 +1,4 @@
-package griezma.goos.auctionsniper;
+package griezma.goos.auctionsniper.xmpp;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -8,6 +8,7 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.packet.Message;
 import org.junit.Test;
 
+import griezma.goos.auctionsniper.AuctionEventListener;
 import griezma.goos.auctionsniper.AuctionEventListener.PriceSource;
 
 public class AuctionMessageTranslatorTest {

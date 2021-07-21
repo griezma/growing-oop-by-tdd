@@ -4,6 +4,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import griezma.goos.auctionsniper.AuctionEventListener.PriceSource;
@@ -13,7 +14,12 @@ public class AuctionSniperTest {
     
     private final Auction auction = mock(Auction.class);
     private final SniperListener listener = mock(SniperListener.class);
-    private final AuctionSniper sniper = new AuctionSniper(ITEM_ID, auction, listener);
+    private final AuctionSniper sniper = new AuctionSniper(ITEM_ID, auction);
+
+    @Before
+    public void beforeEach() {
+        sniper.addSniperListener(listener);
+    }
 
     @Test
     public void reportsLostWhenAutionCloses() {

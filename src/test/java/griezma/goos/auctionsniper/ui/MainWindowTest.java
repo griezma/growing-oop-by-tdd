@@ -8,8 +8,7 @@ import griezma.goos.auctionsniper.AuctionSniperDriver;
 import griezma.goos.auctionsniper.UserRequestListener;
 
 public class MainWindowTest {
-    private final SnipersTableModel tableModel = new SnipersTableModel();
-    private final MainWindow mainWindow = new MainWindow(tableModel);
+    private final MainWindow mainWindow = new MainWindow(new SniperPortfolio());
     private final AuctionSniperDriver driver = new AuctionSniperDriver(100);
 
     @Test

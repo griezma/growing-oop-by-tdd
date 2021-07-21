@@ -8,7 +8,6 @@ import griezma.goos.auctionsniper.FakeAuctionServer;
 
 import static griezma.goos.auctionsniper.ApplicationRunner.SNIPER_XMPP_ID;
 
-
 public class AuctionSniperEndToEndTest {
 
     private final FakeAuctionServer auction = new FakeAuctionServer("item-54321");
