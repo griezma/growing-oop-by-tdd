@@ -23,11 +23,12 @@ public class XmppAuction implements Auction {
     private final Chat chat;
     private final Announcer<AuctionEventListener> eventListeners = Announcer.to(AuctionEventListener.class);
 
-    public XmppAuction(XMPPConnection connection, String itemId) {
-        chat = connection.getChatManager().createChat(
-            auctionId(itemId, connection),
-            new AuctionMessageTranslator(connection.getUser(), eventListeners.announce())
-            );
+    public XmppAuction(XMPPConnection connection, String itemId, XmppFailureReporter failureReporter) {
+        AuctionMessageTranslator messageTranslator = translatorFor(connection, failureReporter);
+        final String auctionId = auctionId(itemId, connection);
+        chat = connection.getChatManager().createChat(auctionId, messageTranslator);
+        
+        addAuctionEventListener(chatDisconnnectOnFailure(messageTranslator));
 
         log.info(String.format("Chat created: user=%s, participant=%s", connection.getUser(), chat.getParticipant()));
     }
@@ -56,6 +57,26 @@ public class XmppAuction implements Auction {
         } catch (XMPPException e) {
             e.printStackTrace();
         }
+    }
+
+    private AuctionMessageTranslator translatorFor(XMPPConnection connection, XmppFailureReporter failureReporter) {
+        return new AuctionMessageTranslator(connection.getUser(), eventListeners.announce(), failureReporter);
+    }
+
+    private AuctionEventListener chatDisconnnectOnFailure(AuctionMessageTranslator translator) {
+        return new AuctionEventListener() {
+
+            @Override
+            public void currentPrice(int price, int increment, PriceSource source) {
+            }
+            @Override
+            public void auctionClosed() {
+            }
+            @Override
+            public void auctionFailed() {
+               chat.removeMessageListener(translator);
+            }
+        };
     }
 
     private static String auctionId(String itemId, XMPPConnection connection) {

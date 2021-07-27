@@ -6,7 +6,7 @@ public interface AuctionEventListener {
         OtherBidder
     }
 
-    void auctionClosed();
-
     void currentPrice(int price, int increment, PriceSource source);
+    void auctionClosed();
+    void auctionFailed();
 }

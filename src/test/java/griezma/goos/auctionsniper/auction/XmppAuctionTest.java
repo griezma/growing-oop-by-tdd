@@ -51,6 +51,9 @@ public class XmppAuctionTest {
             @Override
             public void currentPrice(int price, int increment, PriceSource source) {
             }
+
+            @Override
+            public void auctionFailed() {}
         };
     }
 

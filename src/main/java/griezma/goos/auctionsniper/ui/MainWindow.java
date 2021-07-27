@@ -31,6 +31,7 @@ public class MainWindow extends JFrame {
     public static final String STATUS_WINNING = "winning";
     public static final String STATUS_WON = "won";
     public static final String STATUS_LOSING = "losing";
+    public static final String STATUS_FAILED = "failed";
     
     private static final String SNIPERS_TABLE_NAME = "AuctionSniperTable";
     public static final String NEW_ITEM_ID_NAME = "NewItemField";

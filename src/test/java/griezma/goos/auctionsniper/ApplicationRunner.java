@@ -1,5 +1,8 @@
 package griezma.goos.auctionsniper;
 
+import java.io.IOException;
+import static org.hamcrest.Matchers.containsString;
+
 import griezma.goos.auctionsniper.ui.MainWindow;
 
 public class ApplicationRunner {
@@ -11,8 +14,9 @@ public class ApplicationRunner {
     public static final String SNIPER_XMPP_ID = "sniper@localhost/Auction";
 
     private AuctionSniperDriver driver;
+    private AuctionLogDriver logDriver = new AuctionLogDriver();
 
-    public void startBiddingIn(final FakeAuctionServer... auctions) {
+    public void startBiddingIn(final FakeAuctionServer... auctions) throws IOException {
         startSniper();
 
         for (FakeAuctionServer auction : auctions) {
@@ -22,14 +26,15 @@ public class ApplicationRunner {
         }
     }
 
-    public void startBiddingIn(FakeAuctionServer auction, int stopPrice) {
+    public void startBiddingWithStopPrice(FakeAuctionServer auction, int stopPrice) throws IOException {
         startSniper();
         final String itemId = auction.getItemId();
         driver.startBiddingFor(itemId, stopPrice);
         driver.showsSniperStatus(itemId, 0, 0, MainWindow.STATUS_JOINING);
     }
 
-    private void startSniper() {
+    private void startSniper() throws IOException {
+        logDriver.clearLog();
         Thread thread = new Thread("Test Application") {
             @Override
             public void run() {
@@ -80,9 +85,17 @@ public class ApplicationRunner {
         driver.showsSniperStatus(auction.getItemId(), lastPrice, lastBid, MainWindow.STATUS_LOSING);
     }
 
+    public void showsSniperHasFailed(FakeAuctionServer auction) {
+        driver.showsSniperStatus(auction.getItemId(), 0, 0, MainWindow.STATUS_FAILED);
+    }
+
     public void stop() {
         if (driver != null) {
             driver.dispose();
         }
+    }
+
+    public void reportsInvalidMessage(FakeAuctionServer auction, String brokenMessage) throws IOException {
+        logDriver.hasEntry(containsString(brokenMessage));
     }
 }

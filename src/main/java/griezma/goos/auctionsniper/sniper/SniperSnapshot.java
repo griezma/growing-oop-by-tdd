@@ -34,6 +34,10 @@ public class SniperSnapshot {
         return new SniperSnapshot(itemId, lastPrice, lastBid, sniperState.whenAuctionClosed());
     }
 
+    public SniperSnapshot failed() {
+        return new SniperSnapshot(itemId, 0, 0, SniperState.FAILED);
+    }
+
     public boolean isForSameItemAs(SniperSnapshot other) {
         return other.itemId.equals(itemId);
     }
@@ -64,5 +68,6 @@ public class SniperSnapshot {
             "[SniperState: itemId=%s, lastPrice=%d, lastBid=%d, state=%s]", 
                 itemId, lastPrice, lastBid, sniperState.toString());
     }
+
 
 }

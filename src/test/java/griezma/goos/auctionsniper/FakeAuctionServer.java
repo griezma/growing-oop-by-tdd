@@ -71,9 +71,13 @@ public class FakeAuctionServer {
     public void hasReceivedJoinRequest(String sniperId) throws InterruptedException {
         receivesAMessageMatching(sniperId, equalTo(XmppAuction.JOIN_COMMAND_FORMAT));
     }
- 
+    
     public void hasReceivedBid(int bid, String sniperId) throws InterruptedException {
         receivesAMessageMatching(sniperId, equalTo(String.format(XmppAuction.BID_COMMAND_FORMAT, bid)));
+    }
+
+    public void sendInvalidMessageContaining(String brokenMessage) throws XMPPException {
+        currentChat.sendMessage(brokenMessage);
     }
 
     private void receivesAMessageMatching(String sniperId, Matcher<String> matcher) throws InterruptedException {
@@ -82,6 +86,7 @@ public class FakeAuctionServer {
         assertThat(currentChat.getParticipant(), startsWith(sniperId));
        
     }
+
 }
 
 class SimpleMessageListener implements MessageListener {

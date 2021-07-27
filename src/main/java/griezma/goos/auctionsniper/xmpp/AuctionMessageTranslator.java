@@ -9,25 +9,38 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.packet.Message;
 
+import griezma.goos.auctionsniper.MissingValueException;
 import griezma.goos.auctionsniper.auction.AuctionEventListener;
 import griezma.goos.auctionsniper.auction.AuctionEventListener.PriceSource;
 
 class AuctionMessageTranslator implements MessageListener {
     private static Logger log = Logger.getLogger("AuctionMessageTranslator");
     
-    private AuctionEventListener eventListener;
+    private final AuctionEventListener eventListener;
+    private final XmppFailureReporter failureReporter;
     private final String sniperId;
 
-    public AuctionMessageTranslator(String sniperId, AuctionEventListener eventListener) {
-        this.eventListener = eventListener;
+    public AuctionMessageTranslator(String sniperId, AuctionEventListener eventListener, XmppFailureReporter failureReporter) {
         this.sniperId = sniperId;
+        this.eventListener = eventListener;
+        this.failureReporter = failureReporter;
     }
 
     @Override
     public void processMessage(Chat unusedChat, Message message) {
-        log.info("processMessage: " + message.getBody());
+        final String messageBody = message.getBody();
+        log.info("processMessage: " + messageBody);
+        try {
+            translate(messageBody);
+        } catch (Exception e) {
+            log.warning("Invalid message: " +messageBody + "|" + e.toString());
+            failureReporter.cannotTranslateMessage(sniperId, messageBody, e);
+            eventListener.auctionFailed();
+        }
+    }
 
-        AuctionEvent event = AuctionEvent.from(message.getBody());
+    private void translate(String message) {
+        AuctionEvent event = AuctionEvent.from(message);
 
         if (event.getType().equals("CLOSE")) {
             eventListener.auctionClosed();
@@ -76,7 +89,11 @@ class AuctionMessageTranslator implements MessageListener {
         }
 
         private String get(String field) {
-            return fields.get(field);
+            String value = fields.get(field);
+            if (null == value) {
+                throw new MissingValueException(field);
+            }
+            return value;
         } 
 
         private int getInt(String field) {

@@ -56,7 +56,9 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
         MainWindow.STATUS_WINNING,
         MainWindow.STATUS_LOSING,
         MainWindow.STATUS_LOST,
-        MainWindow.STATUS_WON
+        MainWindow.STATUS_WON,
+        MainWindow.STATUS_FAILED
+
     };
 
     private List<SniperSnapshot> snapshots = new LinkedList<SniperSnapshot>();

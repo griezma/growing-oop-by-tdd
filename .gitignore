@@ -6,3 +6,4 @@ docker-volumes/
 .project
 .vscode
 target/
+*.log
