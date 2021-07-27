@@ -39,11 +39,14 @@ public class FakeAuctionServer {
     }
 
     public void startSellingItem() throws XMPPException {
+        log.info("startSellingItem");
         connection.connect();
         connection.login(String.format(ITEM_ID_AS_LOGIN, itemId), AUCTION_PASSWORD, AUCTION_RESOURCE);
+
         connection.getChatManager().addChatListener((chat, createdLocally) -> {
             currentChat = chat;
             chat.addMessageListener(messageListener);
+            log.info("Chat assigned: " + currentChat);
         });
     }
 
@@ -60,7 +63,7 @@ public class FakeAuctionServer {
     }
     
     public void reportPrice(int price, int increment, String bidder) throws XMPPException {
-        log.info("reportPrice: " + bidder);
+        log.info("reportPrice: " + currentChat);
         String message = String.format("SOLVersion: 1.1; Event: PRICE; CurrentPrice: %d; Increment: %d; Bidder: %s;", price, increment, bidder);
         currentChat.sendMessage(message);
     }

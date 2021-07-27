@@ -5,8 +5,8 @@ import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
-import griezma.goos.auctionsniper.SniperListener;
-import griezma.goos.auctionsniper.SniperSnapshot;
+import griezma.goos.auctionsniper.sniper.SniperListener;
+import griezma.goos.auctionsniper.sniper.SniperSnapshot;
 
 public class SwingThreadSniperListener implements SniperListener {
     private static final Logger log = Logger.getLogger("SwingThreadSniperListener");

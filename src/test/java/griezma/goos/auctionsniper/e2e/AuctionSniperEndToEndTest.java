@@ -22,7 +22,7 @@ public class AuctionSniperEndToEndTest {
         auction.hasReceivedJoinRequest(SNIPER_XMPP_ID);
 
         auction.announceClosed();
-        application.showsSniperHasLost(auction, 0);
+        application.showsSniperHasLost(auction, 0, 0);
     }
 
     @Test
@@ -71,6 +71,74 @@ public class AuctionSniperEndToEndTest {
 
         application.showsSniperHasWon(auction, 1098);
         application.showsSniperHasWon(auction2, 521);
+    }
+
+    @Test
+    public void sniperLosesAuctionWhenPriceBecomesTooHigh() throws Exception {
+        final int stopPrice = 1100;
+        auction.startSellingItem();
+        application.startBiddingIn(auction, stopPrice);
+        auction.hasReceivedJoinRequest(SNIPER_XMPP_ID);
+        
+        final int otherBid = 1000;
+        final int increment = 98;
+        auction.reportPrice(otherBid, increment, "other bidder");
+        application.showsSniperIsBidding(auction, 1000, otherBid + increment);
+        auction.hasReceivedBid(otherBid + increment, SNIPER_XMPP_ID);
+
+        final int bid = otherBid + increment;
+        auction.reportPrice(bid, 97, SNIPER_XMPP_ID);
+        application.showsSniperIsWinning(auction, bid);
+        
+        final int winningPrice = 1197;
+        auction.reportPrice(winningPrice, 10, "third party");
+        
+        final int lastOwnBid = otherBid + increment;
+        application.showsSniperIsLosing(auction, winningPrice, lastOwnBid);
+
+        auction.announceClosed();
+        application.showsSniperHasLost(auction, winningPrice, lastOwnBid);
+    }
+
+    @Test
+    public void sniperLosesImmediatelyWhenFirstPriceIsTooHigh() throws Exception {
+        auction.startSellingItem();
+        final int stopPrice = 1100;
+        application.startBiddingIn(auction, stopPrice);
+
+        final int otherBid = 1099;
+        final int increment = 2;
+        auction.reportPrice(otherBid, increment, "other bidder");
+        application.showsSniperIsLosing(auction, otherBid, 0);
+
+        auction.announceClosed();
+        application.showsSniperHasLost(auction, otherBid, 0);
+    }
+
+    @Test
+    public void sniperContinuousLosingOnceStopPriceReached() throws Exception {
+        auction.startSellingItem();
+        final int stopPrice = 1100;
+        application.startBiddingIn(auction, stopPrice);
+
+        auction.reportPrice(1000, 98, "other bidder");
+        final int ownBid = 1000 + 98;
+        auction.reportPrice(ownBid, 97, SNIPER_XMPP_ID);
+
+        application.showsSniperIsWinning(auction, ownBid);
+
+        final int thirdBid = ownBid + 97;
+        auction.reportPrice(thirdBid, 96, "third bidder");
+        application.showsSniperIsLosing(auction, thirdBid, ownBid);
+
+        final int winningPrice = thirdBid + 96;
+        auction.reportPrice(winningPrice, 95, "fourth bidder");
+
+        application.showsSniperIsLosing(auction, winningPrice, ownBid);
+
+        auction.announceClosed();
+
+        application.showsSniperHasLost(auction, winningPrice, ownBid);
     }
 
     @After

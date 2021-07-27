@@ -11,5 +11,6 @@ Reimplemented examples from the "Growing Object-Oriented Software, Guided by Tes
     * sniper/sniper
     * auction-item-54321/auction
     * auction-item-65432/auction
-* Server Settings/Resource Policy: Never kick
+* Set "Server Settings"/"Resource Policy" to "Never kick"
+* Set "Server Name" property to "localhost" in section "Server"/"Server Manager"/"Server Information", button "Edit properties" on bottom
 

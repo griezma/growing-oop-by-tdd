@@ -6,8 +6,8 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 
-import griezma.goos.auctionsniper.Auction;
-import griezma.goos.auctionsniper.AuctionEventListener;
+import griezma.goos.auctionsniper.auction.Auction;
+import griezma.goos.auctionsniper.auction.AuctionEventListener;
 import griezma.goos.auctionsniper.utils.Announcer;
 
 public class XmppAuction implements Auction {
@@ -34,7 +34,7 @@ public class XmppAuction implements Auction {
 
     @Override
     public void addAuctionEventListener(AuctionEventListener listener) {
-        log.info("addEventListener");
+        log.info("addAuctionEventListener");
         eventListeners.addListener(listener);    
     }
 
@@ -50,6 +50,7 @@ public class XmppAuction implements Auction {
 
     @Override
     public void bid(int amount) {
+        log.info("bid: " + amount);
         try {
             chat.sendMessage(String.format(BID_COMMAND_FORMAT, amount));
         } catch (XMPPException e) {

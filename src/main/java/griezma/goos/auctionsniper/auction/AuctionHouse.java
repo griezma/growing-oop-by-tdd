@@ -1,7 +1,6 @@
-package griezma.goos.auctionsniper;
+package griezma.goos.auctionsniper.auction;
 
 public interface AuctionHouse {
-    void disconnect();
-
     Auction auctionFor(String itemId);
+    void disconnect();
 }

@@ -7,7 +7,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
@@ -18,10 +17,12 @@ import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 
-import griezma.goos.auctionsniper.Auction;
-import griezma.goos.auctionsniper.AuctionSniper;
-import griezma.goos.auctionsniper.SniperSnapshot;
-import griezma.goos.auctionsniper.SniperState;
+import griezma.goos.auctionsniper.SniperPortfolio;
+import griezma.goos.auctionsniper.auction.Auction;
+import griezma.goos.auctionsniper.sniper.AuctionSniper;
+import griezma.goos.auctionsniper.sniper.Item;
+import griezma.goos.auctionsniper.sniper.SniperSnapshot;
+import griezma.goos.auctionsniper.sniper.SniperState;
 import griezma.goos.auctionsniper.ui.SnipersTableModel.Column;
 
 public class SnipersTableModelTest {
@@ -84,7 +85,7 @@ public class SnipersTableModelTest {
     }
 
     private AuctionSniper auctionSniper(String item) {
-        return new AuctionSniper(item, auction);
+        return new AuctionSniper(new Item(item, Integer.MAX_VALUE), auction);
     }
 
     private void assertRowMatchesSnapshot(int rowIndex, SniperSnapshot expected) {

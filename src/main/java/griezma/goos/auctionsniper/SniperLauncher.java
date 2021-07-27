@@ -2,6 +2,13 @@ package griezma.goos.auctionsniper;
 
 import java.util.ArrayList;
 
+import griezma.goos.auctionsniper.auction.Auction;
+import griezma.goos.auctionsniper.auction.AuctionHouse;
+import griezma.goos.auctionsniper.sniper.AuctionSniper;
+import griezma.goos.auctionsniper.sniper.Item;
+import griezma.goos.auctionsniper.sniper.SniperCollector;
+import griezma.goos.auctionsniper.ui.UserRequestListener;
+
 final class SniperLauncher implements UserRequestListener {
   
     private final AuctionHouse auctionHouse;
@@ -14,9 +21,9 @@ final class SniperLauncher implements UserRequestListener {
     }
 
     @Override
-    public void joinAuction(String itemId) {
-        Auction auction = auctionHouse.auctionFor(itemId);
-        AuctionSniper sniper = new AuctionSniper(itemId, auction);
+    public void joinAuction(Item item) {
+        Auction auction = auctionHouse.auctionFor(item.identifier);
+        AuctionSniper sniper = new AuctionSniper(item, auction);
         auction.addAuctionEventListener(sniper);
         auction.join();
 

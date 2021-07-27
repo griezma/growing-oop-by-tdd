@@ -7,8 +7,8 @@ import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
+import griezma.goos.auctionsniper.auction.AuctionHouse;
 import griezma.goos.auctionsniper.ui.MainWindow;
-import griezma.goos.auctionsniper.ui.SniperPortfolio;
 import griezma.goos.auctionsniper.xmpp.XmppAuctionHouse;
 
 public class Main {

@@ -1,11 +1,10 @@
-package griezma.goos.auctionsniper.ui;
+package griezma.goos.auctionsniper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import griezma.goos.auctionsniper.AuctionSniper;
-import griezma.goos.auctionsniper.SniperPortfolioListener;
-import griezma.goos.auctionsniper.SniperCollector;
+import griezma.goos.auctionsniper.sniper.AuctionSniper;
+import griezma.goos.auctionsniper.sniper.SniperCollector;
 import griezma.goos.auctionsniper.utils.Announcer;
 
 public class SniperPortfolio implements SniperCollector {

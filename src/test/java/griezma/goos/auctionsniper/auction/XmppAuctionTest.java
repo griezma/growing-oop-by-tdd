@@ -1,4 +1,4 @@
-package griezma.goos.auctionsniper.e2e;
+package griezma.goos.auctionsniper.auction;
 
 import static org.junit.Assert.assertTrue;
 
@@ -9,9 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import griezma.goos.auctionsniper.ApplicationRunner;
-import griezma.goos.auctionsniper.Auction;
-import griezma.goos.auctionsniper.AuctionEventListener;
-import griezma.goos.auctionsniper.AuctionHouse;
 import griezma.goos.auctionsniper.FakeAuctionServer;
 import griezma.goos.auctionsniper.Main;
 import griezma.goos.auctionsniper.xmpp.XmppAuctionHouse;

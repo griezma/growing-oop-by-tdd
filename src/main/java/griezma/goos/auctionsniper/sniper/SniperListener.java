@@ -1,4 +1,4 @@
-package griezma.goos.auctionsniper;
+package griezma.goos.auctionsniper.sniper;
 
 import java.util.EventListener;
 

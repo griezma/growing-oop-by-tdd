@@ -1,4 +1,4 @@
-package griezma.goos.auctionsniper;
+package griezma.goos.auctionsniper.auction;
 
 public interface Auction {
     void join();

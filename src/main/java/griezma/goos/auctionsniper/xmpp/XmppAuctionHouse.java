@@ -3,8 +3,8 @@ package griezma.goos.auctionsniper.xmpp;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 
-import griezma.goos.auctionsniper.Auction;
-import griezma.goos.auctionsniper.AuctionHouse;
+import griezma.goos.auctionsniper.auction.Auction;
+import griezma.goos.auctionsniper.auction.AuctionHouse;
 
 public class XmppAuctionHouse implements AuctionHouse {
     private static final String AUCTION_RESOURCE = "Auction";

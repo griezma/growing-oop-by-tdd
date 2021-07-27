@@ -6,11 +6,11 @@ import java.util.logging.Logger;
 
 import javax.swing.table.AbstractTableModel;
 
-import griezma.goos.auctionsniper.AuctionSniper;
+import griezma.goos.auctionsniper.sniper.AuctionSniper;
 import griezma.goos.auctionsniper.SniperPortfolioListener;
-import griezma.goos.auctionsniper.SniperListener;
-import griezma.goos.auctionsniper.SniperSnapshot;
-import griezma.goos.auctionsniper.SniperState;
+import griezma.goos.auctionsniper.sniper.SniperListener;
+import griezma.goos.auctionsniper.sniper.SniperSnapshot;
+import griezma.goos.auctionsniper.sniper.SniperState;
 
 public class SnipersTableModel extends AbstractTableModel implements SniperListener, SniperPortfolioListener {
     private static final Logger log = Logger.getLogger("SnipersTableModel");
@@ -54,6 +54,7 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
         MainWindow.STATUS_JOINING,
         MainWindow.STATUS_BIDDING,
         MainWindow.STATUS_WINNING,
+        MainWindow.STATUS_LOSING,
         MainWindow.STATUS_LOST,
         MainWindow.STATUS_WON
     };

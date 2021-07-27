@@ -1,4 +1,4 @@
-package griezma.goos.auctionsniper;
+package griezma.goos.auctionsniper.sniper;
 
 public enum SniperState {
     JOINING {
@@ -17,6 +17,12 @@ public enum SniperState {
         @Override
         public SniperState whenAuctionClosed() { 
             return WON;
+        }
+    },
+    LOSING {
+        @Override
+        public SniperState whenAuctionClosed() {
+            return LOST;
         }
     },
     LOST,

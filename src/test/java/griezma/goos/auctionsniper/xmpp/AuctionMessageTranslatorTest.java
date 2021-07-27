@@ -8,8 +8,8 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.packet.Message;
 import org.junit.Test;
 
-import griezma.goos.auctionsniper.AuctionEventListener;
-import griezma.goos.auctionsniper.AuctionEventListener.PriceSource;
+import griezma.goos.auctionsniper.auction.AuctionEventListener;
+import griezma.goos.auctionsniper.auction.AuctionEventListener.PriceSource;
 
 public class AuctionMessageTranslatorTest {
     private static final Chat UNUSED_CHAT = null;

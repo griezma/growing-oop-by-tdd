@@ -5,7 +5,8 @@ import static org.hamcrest.Matchers.equalTo;
 import org.junit.Test;
 
 import griezma.goos.auctionsniper.AuctionSniperDriver;
-import griezma.goos.auctionsniper.UserRequestListener;
+import griezma.goos.auctionsniper.SniperPortfolio;
+import griezma.goos.auctionsniper.sniper.Item;
 
 public class MainWindowTest {
     private final MainWindow mainWindow = new MainWindow(new SniperPortfolio());
@@ -13,15 +14,15 @@ public class MainWindowTest {
 
     @Test
     public void makeUserRequestWhenJoinButtonClicked() {
-        ValueMatcherProbe<String> buttonProbe = new ValueMatcherProbe<>(equalTo("an item-id"), "join request");
+        ValueMatcherProbe<Item> itemProbe = new ValueMatcherProbe<>(equalTo(new Item("an item-id", 789)), "join request");
         mainWindow.addUserRequestListener(new UserRequestListener() {
             @Override
-            public void joinAuction(String itemId) {
-                buttonProbe.setReceivedValue(itemId);
+            public void joinAuction(Item item) {
+                itemProbe.setReceivedValue(item);
             }
         });
-        driver.startBiddingFor("an item-id");
-        driver.check(buttonProbe);
+        driver.startBiddingFor("an item-id", 789);
+        driver.check(itemProbe);
     }
     
 }

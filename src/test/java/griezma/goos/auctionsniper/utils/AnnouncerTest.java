@@ -5,7 +5,7 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
-import griezma.goos.auctionsniper.AuctionEventListener;
+import griezma.goos.auctionsniper.auction.AuctionEventListener;
 
 public class AnnouncerTest {
     

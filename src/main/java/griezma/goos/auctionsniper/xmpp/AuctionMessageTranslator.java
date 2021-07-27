@@ -9,8 +9,8 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.packet.Message;
 
-import griezma.goos.auctionsniper.AuctionEventListener;
-import griezma.goos.auctionsniper.AuctionEventListener.PriceSource;
+import griezma.goos.auctionsniper.auction.AuctionEventListener;
+import griezma.goos.auctionsniper.auction.AuctionEventListener.PriceSource;
 
 class AuctionMessageTranslator implements MessageListener {
     private static Logger log = Logger.getLogger("AuctionMessageTranslator");

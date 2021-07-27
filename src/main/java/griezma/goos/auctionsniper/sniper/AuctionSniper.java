@@ -1,16 +1,20 @@
-package griezma.goos.auctionsniper;
+package griezma.goos.auctionsniper.sniper;
 
+import griezma.goos.auctionsniper.auction.Auction;
+import griezma.goos.auctionsniper.auction.AuctionEventListener;
 import griezma.goos.auctionsniper.utils.Announcer;
 
 public class AuctionSniper implements AuctionEventListener {
 
     private Auction auction;
+    private Item item;
     private SniperSnapshot snapshot;
     private final Announcer<SniperListener> listeners = Announcer.to(SniperListener.class);
 
-    public AuctionSniper(String itemId, Auction auction) {
+    public AuctionSniper(Item item, Auction auction) {
         this.auction = auction;
-        this.snapshot = SniperSnapshot.joining(itemId);
+        this.item = item;
+        this.snapshot = SniperSnapshot.joining(item.identifier);
     }
 
     public void addSniperListener(SniperListener listener) {
@@ -25,14 +29,19 @@ public class AuctionSniper implements AuctionEventListener {
 
     @Override
     public void currentPrice(int price, int increment, PriceSource source) {
-        boolean winning = source == PriceSource.Sniper;
-        
-        if (winning) {
+        switch(source) {  
+        case Sniper:
             snapshot = snapshot.winning(price);
-        } else {
+            break;
+        case OtherBidder:
             final int bid = price + increment;
-            auction.bid(bid);
-            snapshot = snapshot.bidding(price, bid);
+            if (item.allowsBid(bid)) {
+                auction.bid(bid);
+                snapshot = snapshot.bidding(price, bid);
+            } else {
+                snapshot = snapshot.losing(price);
+            }
+            break;
         }
         notifyChange();
     }

@@ -1,4 +1,4 @@
-package griezma.goos.auctionsniper;
+package griezma.goos.auctionsniper.sniper;
 
 public class SniperSnapshot {
 
@@ -24,6 +24,10 @@ public class SniperSnapshot {
 
     public SniperSnapshot winning(int newLastPrice) {
         return new SniperSnapshot(itemId, newLastPrice, lastBid, SniperState.WINNING);
+    }
+
+    public SniperSnapshot losing(int newLastPrice) {
+        return new SniperSnapshot(itemId, newLastPrice, lastBid, SniperState.LOSING);
     }
 
     public SniperSnapshot closed() {
